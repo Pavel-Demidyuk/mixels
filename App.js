@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 
+import * as firebase from 'firebase'
+
 const colors = [
   "#C0392B",
   "#9B59B6",
@@ -20,6 +22,16 @@ export default class App extends React.Component {
       mixelColors : []
     }
 
+    var config = {
+      apiKey: "AIzaSyD_0gyCPlXyBxZ7rP8Le5H_Mtk6ET2-xRc",
+      authDomain: "mixels-254f5.firebaseapp.com",
+      databaseURL: "https://mixels-254f5.firebaseio.com",
+      projectId: "mixels-254f5",
+      storageBucket: "mixels-254f5.appspot.com",
+      messagingSenderId: "1052869328788"
+    };
+    firebase.initializeApp(config);
+
   }
 
   onMixelPress (mixelNumber) {
@@ -27,12 +39,20 @@ export default class App extends React.Component {
     console.log(mixelNumber)
     let tempColors = this.state.mixelColors
 
+    let color = ''
+
     if (typeof tempColors[mixelNumber] === "undefined" || tempColors[mixelNumber] + 1 === colors.length ) {
-      tempColors[mixelNumber] = 0
+      color = 0
     }
     else {
-      tempColors[mixelNumber] = tempColors[mixelNumber] % colors.length + 1
+      color = tempColors[mixelNumber] % colors.length + 1
     }
+
+    tempColors[mixelNumber] = color
+
+    firebase.database().ref('mixels/' + mixelNumber).set({
+      currentColor: color
+    });
 
     this.setState({mixelColors: tempColors})
   }
